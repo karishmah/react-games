@@ -1,6 +1,4 @@
-'use strict';
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 const MAX = 1;
 const COLORS = ['blue', 'red', 'green', 'yellow'];
@@ -8,17 +6,17 @@ const COLORS = ['blue', 'red', 'green', 'yellow'];
 const getRandomId = () => COLORS[Math.floor(Math.random() * COLORS.length)];
 
 const SimonSquare = (props) => {
-  const { player, id, simon, onColorClicked } = props;
+  const { player, id, simon, onColorClicked,finished } = props;
   if (player) {
     return (
       <div className={"simon-square background-" + id}>
         <div className="row">
-          <ColorButton color={'red'} onClick={() => onColorClicked('red')} disabled={simon}/>
-          <ColorButton color={'blue'} onClick={() => onColorClicked('blue')} disabled={simon}/>
+          <ColorButton color={'red'} onClick={() => onColorClicked('red')} disabled={simon || finished }/>
+          <ColorButton color={'blue'} onClick={() => onColorClicked('blue')} disabled={simon || finished}/>
         </div>
         <div className="row">
-          <ColorButton color={'green'} onClick={() => onColorClicked('green')} disabled={simon}/>
-          <ColorButton color={'yellow'} onClick={() => onColorClicked('yellow')} disabled={simon}/>
+          <ColorButton color={'green'} onClick={() => onColorClicked('green')} disabled={simon || finished}/>
+          <ColorButton color={'yellow'} onClick={() => onColorClicked('yellow')} disabled={simon || finished}/>
         </div>
       </div>
     );
@@ -48,7 +46,7 @@ const Result = (props) => {
   if (finished && !simon) {
     if(win) {
       return <div>Congrats, you won!</div>
-    } else if(!win) {
+    } else  {
       return <div>Sorry, try again!</div>
     }
   }
@@ -65,11 +63,11 @@ const PlayersTurn = (props) => {
 };
 
 const Board = (props) => {
-  const { colorFill, onColorClicked, simon, player} = props;
+  const { colorFill, onColorClicked, simon, finished} = props;
   return (
     <div className="board">
       <SimonSquare id={colorFill} player={false}/>
-      <SimonSquare id={'white'} player={true} onColorClicked={onColorClicked}></SimonSquare>
+      <SimonSquare id={'white'} player={true} onColorClicked={onColorClicked} simon={simon} finished={finished}></SimonSquare>
     </div>
   );
 }
@@ -104,11 +102,14 @@ class Game extends React.Component {
       count: 0,
       sequence: [],
     });
+
+    console.log(this.state.win)
   }
 
   simonSequence() {
     this.setState({
       simon: true,
+      win: false,
       finished: false,
       maxCount: this.state.win ? this.state.maxCount +1 : 1,
     });
@@ -119,18 +120,23 @@ class Game extends React.Component {
   }
 
   componentDidUpdate() {
-    if(this.state.count == this.state.maxCount) {
+    if((this.state.count === this.state.maxCount) ) {
+      console.log('updating')
       this.setState({
         count: 0,
         finished: true,
-        win: true,
+        win: this.state.win ? true : false,
       });
-      this.restart();
+      const finishedGame = setTimeout( () => {
+        this.restart();
+        if (this.state.win) this.simonSequence()
+      }, 1000);
+      clearTimeout(finishedGame);
     }
   }
 
   handleChangeColor() {
-    if(this.state.sequence.length == this.state.maxCount) {
+    if(this.state.sequence.length === this.state.maxCount) {
         this.setState({
           colorFill: 'white',
           simon: false,
@@ -143,7 +149,6 @@ class Game extends React.Component {
       this.setState({
         colorFill: newColor,
         finished: false,
-        win: true,
       });
     }
   }
@@ -151,12 +156,14 @@ class Game extends React.Component {
   onButtonClicked(color) {
     this.incrementCount();
 
-    if (color != this.state.sequence[this.state.count]) {
+    if (color !== this.state.sequence[this.state.count]) {
       this.setState({
         win: false,
         finished: true,
       });
-      this.restart();
+      this.restart()
+    } else {
+      this.setState({win: true});
     }
 
   }
@@ -167,7 +174,7 @@ class Game extends React.Component {
         <StartButton onClick={this.simonSequence} disabled={!this.state.finished}></StartButton>
         <Greeting simon={this.state.simon} />
         <div className="level">Level: {this.state.maxCount}</div>
-        <Board colorFill={this.state.colorFill} onColorClicked={this.onButtonClicked}/>
+        <Board colorFill={this.state.colorFill} onColorClicked={this.onButtonClicked} finished={this.state.finished} simon={this.state.simon}/>
         <Result finished={this.state.finished} win={this.state.win} simon={this.state.simon}/>
       </div>
     )

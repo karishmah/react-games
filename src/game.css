@@ -1,0 +1,81 @@
+/* CSS style sheet */
+.board {
+  display: flex;
+}
+
+.level {
+  float: left;
+}
+
+.screen {
+  /* padding-top: 120px; */
+  /* position: fixed; */
+  /* left: 50%; */
+  width: 50%;
+  margin: auto;
+  padding-top: 120px;
+  /* transform: translate(-50%, -50%); */
+  z-index: 2;
+}
+
+.start-button {
+  border: 1px solid black;
+  margin: 5px;
+  outline: none;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 5px #999;
+  border-radius: 5px;
+}
+
+.start-button:active {
+  box-shadow: 0 2px #666;
+  transform: translateY(3px);
+}
+
+.color-button{
+  border: 1px solid black;
+  width: 90px;
+  height: 90px;
+  margin: 5px;
+  outline: none;
+  border-radius: 5px;
+  box-shadow: 0 5px #999;
+  cursor: pointer;
+}
+
+.color-button:active {
+  box-shadow: 0 2px #666;
+  transform: translateY(3px);
+}
+
+.background-red {
+  background-color: red
+}
+
+.background-yellow {
+  background-color: yellow
+}
+
+.background-green {
+  background-color: green
+}
+
+.background-blue {
+  background-color: blue;
+}
+
+
+.simon-square {
+  width: 200px;
+  height: 200px;
+  box-sizing: border-box;
+  margin: 20px;
+
+}
+.simon-square.simon {
+  border: solid;
+}
